@@ -3,15 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>Planet Shooter</title>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data:; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://upload.wikimedia.org; script-src 'self' 'unsafe-inline'; connect-src *;">
-  <meta name="referrer" content="no-referrer">
-  <meta name="robots" content="noindex, nofollow">
-  <meta name="google" content="notranslate">
+
   <meta name="viewport"
         content="width=device-width, height=device-height,
                  initial-scale=1.0, user-scalable=no">
-  <meta name="description" content="A simple, safe, browser-based game. No tracking, no ads, no malware.">
-  <link rel="canonical" href="https://yourdomain.example/game.html">
 
   <style>
     body {
@@ -45,17 +40,6 @@
   </style>
 </head>
 <body>
-
-  <!-- Browser Suggestion Modal -->
-  <div id="browserModal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:2000;">
-    <div style="background:#fff;padding:36px 44px;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.22);min-width:340px;display:flex;flex-direction:column;gap:22px;align-items:center;">
-      <h2 style="margin:0 0 10px 0;text-align:center;">For proper gameplay, open in Chrome</h2>
-      <p style="margin:0 0 10px 0;text-align:center;">If you want to use another browser, click below to copy the game link and open it in your preferred browser.</p>
-      <button id="copyGameLinkBtn" style="padding:10px 20px;font-size:17px;background:#27ae60;color:#fff;border:none;border-radius:6px;cursor:pointer;">Copy Game Link</button>
-      <span id="copyConfirmMsg" style="color:#27ae60;display:none;">Link copied! Paste it in any browser you like.</span>
-      <button id="continueToGameBtn" style="margin-top:10px;padding:8px 0;font-size:18px;background:#3498db;color:#fff;border:none;border-radius:5px;cursor:pointer;width:100%;">Continue</button>
-    </div>
-  </div>
 
   <div id="userInfoModal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:100;">
     <form id="userInfoForm" style="background:#fff;padding:32px 40px;border-radius:10px;box-shadow:0 4px 24px rgba(0,0,0,0.18);min-width:320px;display:flex;flex-direction:column;gap:18px;">
@@ -107,48 +91,5 @@
   <canvas id="gameCanvas"></canvas>
 
   <script src="game.js"></script>
-  <script>
-    // Show browser modal on load, hide user info modal until browser modal is closed
-    document.addEventListener('DOMContentLoaded', function() {
-      var browserModal = document.getElementById('browserModal');
-      var userInfoModal = document.getElementById('userInfoModal');
-      if (browserModal && userInfoModal) {
-        userInfoModal.style.display = 'none';
-        browserModal.style.display = 'flex';
-      }
-      var copyBtn = document.getElementById('copyGameLinkBtn');
-      var confirmMsg = document.getElementById('copyConfirmMsg');
-      if (copyBtn) {
-        copyBtn.onclick = function() {
-          navigator.clipboard.writeText(window.location.href).then(function() {
-            confirmMsg.style.display = 'block';
-            setTimeout(function(){ confirmMsg.style.display = 'none'; }, 2000);
-          });
-        };
-      }
-      var continueBtn = document.getElementById('continueToGameBtn');
-      if (continueBtn) {
-        continueBtn.onclick = function() {
-          browserModal.style.display = 'none';
-          userInfoModal.style.display = 'flex';
-        };
-      }
-    });
-  </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
