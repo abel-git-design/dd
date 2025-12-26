@@ -3,90 +3,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const canvas = document.getElementById("gameCanvas");
   const ctx = canvas.getContext("2d");
 
-  function isMobile() {
-    return /Mobi|Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
-  }
-
-  // =====================
-  // SHOOT BUTTON (MOBILE)
-  // =====================
-  let shootBtn = null;
-  function createShootButton() {
-    if (!shootBtn) {
-      shootBtn = document.createElement('button');
-      shootBtn.id = 'shootBtn';
-      shootBtn.textContent = 'Shoot';
-      shootBtn.style.position = 'fixed';
-      shootBtn.style.left = '50%';
-      shootBtn.style.bottom = '8vh';
-      shootBtn.style.transform = 'translateX(-50%)';
-      shootBtn.style.zIndex = '1001';
-      shootBtn.style.padding = '22px 60px';
-      shootBtn.style.fontSize = '2.2rem';
-      shootBtn.style.background = '#27ae60';
-      shootBtn.style.color = '#fff';
-      shootBtn.style.border = 'none';
-      shootBtn.style.borderRadius = '16px';
-      shootBtn.style.boxShadow = '0 2px 12px rgba(0,0,0,0.18)';
-      shootBtn.style.display = 'none';
-      shootBtn.style.userSelect = 'none';
-      shootBtn.style.touchAction = 'manipulation';
-      document.body.appendChild(shootBtn);
-    }
-  }
-  createShootButton();
-
   // =====================
   // VIRTUAL GAME SPACE
   // =====================
-  let VIRTUAL_WIDTH = 900;
-  let VIRTUAL_HEIGHT = 900;
-
-  const ENEMY_RADIUS = Math.floor(VIRTUAL_WIDTH * 0.18); // ~160px for 900px
-  const PLANET_LIGHT = "rgb(230,230,230)";
-  const PLANET_DARK = "rgb(20,20,20)";
-  const BG_COLOR = [120,120,120];
-  const BASE_ENEMY_COLOR = [150,150,150];
-  const BASE_BALL_COLOR = [200,200,200];
-
-  const bgPlanets = [
-    [VIRTUAL_WIDTH*0.13,VIRTUAL_HEIGHT*0.13,Math.floor(VIRTUAL_WIDTH*0.06),PLANET_LIGHT],
-    [VIRTUAL_WIDTH*0.87,VIRTUAL_HEIGHT*0.13,Math.floor(VIRTUAL_WIDTH*0.055),PLANET_DARK],
-    [VIRTUAL_WIDTH*0.13,VIRTUAL_HEIGHT*0.87,Math.floor(VIRTUAL_WIDTH*0.045),PLANET_DARK],
-    [VIRTUAL_WIDTH*0.87,VIRTUAL_HEIGHT*0.87,Math.floor(VIRTUAL_WIDTH*0.07),PLANET_LIGHT],
-    [VIRTUAL_WIDTH*0.10,VIRTUAL_HEIGHT*0.5,Math.floor(VIRTUAL_WIDTH*0.04),PLANET_LIGHT],
-    [VIRTUAL_WIDTH*0.90,VIRTUAL_HEIGHT*0.5,Math.floor(VIRTUAL_WIDTH*0.04),PLANET_DARK]
-  ];
+  const VIRTUAL_WIDTH = 800;
+  const VIRTUAL_HEIGHT = 600;
 
   function resizeCanvas() {
-    let aspect = VIRTUAL_WIDTH / VIRTUAL_HEIGHT;
-    let w = window.innerWidth;
-    let h = window.innerHeight;
-    if (isMobile()) {
-      // Use the smallest dimension for a perfect square fit, minus a small margin
-      let minDim = Math.min(w, h);
-      let scale = (minDim * 0.995) / VIRTUAL_WIDTH; // 99.5% of min dimension
-      canvas.width = VIRTUAL_WIDTH * scale;
-      canvas.height = VIRTUAL_HEIGHT * scale;
-      canvas.style.position = 'absolute';
-      canvas.style.left = '50%';
-      canvas.style.top = '50%';
-      canvas.style.transform = 'translate(-50%, -50%)';
-      canvas.style.maxWidth = '99vw';
-      canvas.style.maxHeight = '99vh';
-      ctx.setTransform(scale, 0, 0, scale, 0, 0);
-    } else {
-      let scale = Math.min(w / VIRTUAL_WIDTH, h / VIRTUAL_HEIGHT);
-      canvas.width = VIRTUAL_WIDTH * scale;
-      canvas.height = VIRTUAL_HEIGHT * scale;
-      canvas.style.position = 'absolute';
-      canvas.style.left = '50%';
-      canvas.style.top = '50%';
-      canvas.style.transform = 'translate(-50%, -50%)';
-      canvas.style.maxWidth = '100vw';
-      canvas.style.maxHeight = '100vh';
-      ctx.setTransform(scale, 0, 0, scale, 0, 0);
-    }
+    const scale = Math.min(
+      window.innerWidth / VIRTUAL_WIDTH,
+      window.innerHeight / VIRTUAL_HEIGHT
+    );
+
+    canvas.width = VIRTUAL_WIDTH * scale;
+    canvas.height = VIRTUAL_HEIGHT * scale;
+
+    ctx.setTransform(scale, 0, 0, scale, 0, 0);
   }
 
   resizeCanvas();
@@ -96,6 +28,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // =====================
   // COLORS
+  // =====================
+  const BG_COLOR = [120,120,120];
+  const PLANET_LIGHT = "rgb(230,230,230)";
+  const PLANET_DARK = "rgb(20,20,20)";
+  const BASE_ENEMY_COLOR = [150,150,150];
+  const BASE_BALL_COLOR = [200,200,200];
+
+  const ENEMY_RADIUS = 100;
+
+  // =====================
+  // CONTRAST MAP
   // =====================
   const CONTRAST_MAP = [
     0.00, 0.30, 0.40, 0.50, 0.65,
@@ -112,10 +55,22 @@ document.addEventListener("DOMContentLoaded", () => {
     {speed:1.0, balls:4, hits:6},
     {speed:1.0, balls:4, hits:7},
     {speed:1.0, balls:4, hits:7},
-    {speed:1.0, balls:4, hits:7},
-    {speed:1.0, balls:4, hits:7},
-    {speed:1.0, balls:4, hits:7},
-    {speed:1.0, balls:4, hits:7}
+    {speed:1.0, balls:4, hits:11},
+    {speed:1.0, balls:4, hits:11},
+    {speed:1.0, balls:4, hits:11},
+    {speed:1.0, balls:4, hits:11}
+  ];
+
+  // =====================
+  // BACKGROUND PLANETS
+  // =====================
+  const bgPlanets = [
+    [120,120,45,PLANET_LIGHT],
+    [680,120,40,PLANET_DARK],
+    [120,480,35,PLANET_DARK],
+    [680,480,50,PLANET_LIGHT],
+    [90,300,30,PLANET_LIGHT],
+    [710,300,30,PLANET_DARK]
   ];
 
   // =====================
@@ -249,32 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }, { passive:false });
 
   // =====================
-  // INPUT (MOBILE) - USE SHOOT BUTTON
-  // =====================
-  function showShootBtn() {
-    if (shootBtn) shootBtn.style.display = 'block';
-  }
-  function hideShootBtn() {
-    if (shootBtn) shootBtn.style.display = 'none';
-  }
-  if (shootBtn) {
-    shootBtn.addEventListener('touchstart', function(e) {
-      e.preventDefault();
-      if (canShoot && !shooting && gameState === "PLAYING") {
-        shooting = true;
-        shotY = VIRTUAL_HEIGHT - 50;
-      }
-    }, { passive: false });
-    shootBtn.addEventListener('click', function(e) {
-      if (canShoot && !shooting && gameState === "PLAYING") {
-        shooting = true;
-        shotY = VIRTUAL_HEIGHT - 50;
-      }
-    });
-  }
-
-  // =====================
-  // GAME LOOP (UPDATED FOR MOBILE BUTTON)
+  // GAME LOOP (UPDATED)
   // =====================
   let quitTriggered = false;
   let userInfo = { name: "", age: "", sex: "", gamer: "" };
@@ -332,46 +262,9 @@ document.addEventListener("DOMContentLoaded", () => {
     gameState = "GAME_QUIT";
   });
 
-  // Make the shooting ball and preplaced balls the same size
-  const BALL_RADIUS = Math.floor(VIRTUAL_WIDTH * 0.013); // ~12 for 900px
-
   function gameLoop() {
     drawBackground();
     const now = performance.now();
-
-    // Show/hide shoot button for mobile
-    if (isMobile() && gameState === "PLAYING") {
-      showShootBtn();
-    } else {
-      hideShootBtn();
-    }
-
-    // Draw HUD (Level, Score, Chances)
-    if (isMobile()) {
-      // Old-style HUD for mobile: simple text at corners
-      ctx.save();
-      ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform for HUD
-      ctx.font = "bold 22px Arial";
-      ctx.fillStyle = "#222";
-      ctx.textBaseline = "top";
-      ctx.fillText(`Level: ${levelIndex + 1}/10`, 18, 10);
-      ctx.fillText(`Score: ${hits * 10}`, VIRTUAL_WIDTH / 2 - 40, 10);
-      ctx.fillText(`Chances: ${chances}`, VIRTUAL_WIDTH - 160, 10);
-      ctx.restore();
-    } else {
-      // New HUD bar for desktop
-      ctx.save();
-      ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform for HUD
-      ctx.fillStyle = "rgba(255,255,255,0.92)";
-      ctx.fillRect(0, 0, canvas.width, 54); // Simple top bar
-      ctx.font = "bold 22px Arial";
-      ctx.fillStyle = "#222";
-      ctx.textBaseline = "middle";
-      ctx.fillText(`Level: ${levelIndex + 1}/10`, 24, 27);
-      ctx.fillText(`Score: ${hits * 10}`, canvas.width/2 - 50, 27);
-      ctx.fillText(`Chances: ${chances}`, canvas.width - 160, 27);
-      ctx.restore();
-    }
 
     if (quitTriggered || gameState === "GAME_QUIT") {
       drawCleanOverlay();
@@ -430,21 +323,21 @@ document.addEventListener("DOMContentLoaded", () => {
       ctx.arc(
         VIRTUAL_WIDTH / 2 + Math.cos(r) * ENEMY_RADIUS,
         VIRTUAL_HEIGHT / 2 + Math.sin(r) * ENEMY_RADIUS,
-        BALL_RADIUS, 0, Math.PI * 2
+        7, 0, Math.PI * 2
       );
       ctx.fill();
     });
 
     if (!shooting) {
       ctx.beginPath();
-      ctx.arc(VIRTUAL_WIDTH / 2, VIRTUAL_HEIGHT - 50, BALL_RADIUS, 0, Math.PI * 2);
+      ctx.arc(VIRTUAL_WIDTH / 2, VIRTUAL_HEIGHT - 50, 7, 0, Math.PI * 2);
       ctx.fill();
     }
 
     if (shooting) {
       shotY -= 12;
       ctx.beginPath();
-      ctx.arc(VIRTUAL_WIDTH / 2, shotY, BALL_RADIUS, 0, Math.PI * 2);
+      ctx.arc(VIRTUAL_WIDTH / 2, shotY, 7, 0, Math.PI * 2);
       ctx.fill();
 
       if (shotY <= VIRTUAL_HEIGHT / 2 + ENEMY_RADIUS) {
@@ -459,6 +352,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     }
+
+    ctx.fillStyle = "black";
+    ctx.font = "20px Arial";
+    ctx.fillText(`Level: ${levelIndex + 1}/10`, 10, 25);
+    ctx.fillText(`Score: ${hits * 10}`, 10, 50);
+    ctx.fillText(`Chances: ${chances}`, 10, 75);
 
     if (chances <= 0) {
       chancesUsedThisLevel += 3; // Add 3 chances lost for this replay
@@ -555,95 +454,69 @@ document.addEventListener("DOMContentLoaded", () => {
     ctx.fillText(`Often plays games: ${userInfo.gamer}`, infoBoxX + 10, infoBoxY + 110);
     ctx.font = "20px Arial";
 
-    // Show share button and enable pointer events
+    // Show share button
     const shareBtn = document.getElementById("shareBtn");
-    if (shareBtn) {
-      shareBtn.style.display = "block";
-      shareBtn.style.pointerEvents = "auto";
-    }
+    if (shareBtn) shareBtn.style.display = "block";
   }
 
   // Hide share button when not on stats table
   function hideShareBtn() {
     const shareBtn = document.getElementById("shareBtn");
-    if (shareBtn) {
-      shareBtn.style.display = "none";
-      shareBtn.style.pointerEvents = "none";
-    }
+    if (shareBtn) shareBtn.style.display = "none";
   }
 
-  // Ensure share button event listener is attached after DOM is loaded and button exists
-  function setupShareButton() {
-    const shareBtn = document.getElementById("shareBtn");
-    if (shareBtn && !shareBtn._listenerAttached) {
-      shareBtn.addEventListener("click", async function() {
-        try {
-          // Capture the entire stats table area as an image, accounting for canvas scaling
-          const canvas = document.getElementById("gameCanvas");
-          const VIRTUAL_WIDTH = 900;
-          const VIRTUAL_HEIGHT = 900;
-          const tableX = 50, tableY = 50, tableWidth = VIRTUAL_WIDTH - 100, tableHeight = VIRTUAL_HEIGHT - 100;
+  // Share button logic (share entire stats table area as image, trigger system share directly)
+  document.getElementById("shareBtn").addEventListener("click", async function() {
+    // Capture the entire stats table area as an image, accounting for canvas scaling
+    const canvas = document.getElementById("gameCanvas");
+    const VIRTUAL_WIDTH = 800;
+    const VIRTUAL_HEIGHT = 600;
+    const tableX = 50, tableY = 50, tableWidth = VIRTUAL_WIDTH - 100, tableHeight = VIRTUAL_HEIGHT - 100;
 
-          // Calculate the scale between the actual canvas size and the virtual size
-          const scaleX = canvas.width / VIRTUAL_WIDTH;
-          const scaleY = canvas.height / VIRTUAL_HEIGHT;
+    // Calculate the scale between the actual canvas size and the virtual size
+    const scaleX = canvas.width / VIRTUAL_WIDTH;
+    const scaleY = canvas.height / VIRTUAL_HEIGHT;
 
-          // Calculate the actual pixel area to copy
-          const sx = tableX * scaleX;
-          const sy = tableY * scaleY;
-          const sw = tableWidth * scaleX;
-          const sh = tableHeight * scaleY;
+    // Calculate the actual pixel area to copy
+    const sx = tableX * scaleX;
+    const sy = tableY * scaleY;
+    const sw = tableWidth * scaleX;
+    const sh = tableHeight * scaleY;
 
-          // Check for valid size
-          if (sw < 10 || sh < 10) {
-            alert("Unable to generate image for sharing. Please try again or use a larger screen.");
-            return;
-          }
+    // Create a temporary canvas to copy the full stats table area
+    const tempCanvas = document.createElement("canvas");
+    tempCanvas.width = sw;
+    tempCanvas.height = sh;
+    const tempCtx = tempCanvas.getContext("2d");
+    tempCtx.drawImage(canvas, sx, sy, sw, sh, 0, 0, sw, sh);
+    const dataUrl = tempCanvas.toDataURL("image/png");
 
-          // Create a temporary canvas to copy the full stats table area
-          const tempCanvas = document.createElement("canvas");
-          tempCanvas.width = sw;
-          tempCanvas.height = sh;
-          const tempCtx = tempCanvas.getContext("2d");
-          tempCtx.drawImage(canvas, sx, sy, sw, sh, 0, 0, sw, sh);
-          const dataUrl = tempCanvas.toDataURL("image/png");
-
-          // Check Web Share API support
-          if (navigator.canShare && window.File && window.fetch && navigator.canShare({ files: [new File([new Blob()], "test.png", { type: "image/png" })] })) {
-            const res = await fetch(dataUrl);
-            const blob = await res.blob();
-            const file = new File([blob], "planet-shooter-results.png", { type: "image/png" });
-            try {
-              await navigator.share({
-                files: [file],
-                title: "Planet Shooter Results",
-                text: "Check out my Planet Shooter game results!"
-              });
-            } catch (e) {
-              alert("Sharing was cancelled or not supported on this device.");
-            }
-          } else {
-            // Fallback: show download link
-            const shareModal = document.getElementById("shareImageModal");
-            const sharePreview = document.getElementById("shareImagePreview");
-            const shareDownload = document.getElementById("shareImageDownload");
-            sharePreview.innerHTML = `<img src='${dataUrl}' alt='Stats Table' style='max-width:100%; border:1px solid #ccc; border-radius:8px;'/>`;
-            shareDownload.innerHTML = `<a href='${dataUrl}' download='planet-shooter-results.png' style='font-size:15px;'>Download Image</a>`;
-            shareModal.style.display = "flex";
-            document.getElementById("closeShareImageModal").onclick = function() {
-              shareModal.style.display = "none";
-            };
-            alert("Direct sharing is not supported on this device/browser. You can download the image instead.");
-          }
-        } catch (err) {
-          alert("An error occurred while trying to share. Please try again or use a different browser.");
-        }
-      });
-      shareBtn._listenerAttached = true;
+    // Try to share directly using Web Share API (if supported)
+    if (navigator.canShare && window.File && window.fetch) {
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      const file = new File([blob], "planet-shooter-results.png", { type: "image/png" });
+      try {
+        await navigator.share({
+          files: [file],
+          title: "Planet Shooter Results",
+          text: "Check out my Planet Shooter game results!"
+        });
+      } catch (e) {
+        alert("Sharing was cancelled or not supported on this device.");
+      }
+    } else {
+      // Fallback: show download link
+      const shareModal = document.getElementById("shareImageModal");
+      const sharePreview = document.getElementById("shareImagePreview");
+      const shareDownload = document.getElementById("shareImageDownload");
+      sharePreview.innerHTML = `<img src='${dataUrl}' alt='Stats Table' style='max-width:100%; border:1px solid #ccc; border-radius:8px;'/>`;
+      shareDownload.innerHTML = `<a href='${dataUrl}' download='planet-shooter-results.png' style='font-size:15px;'>Download Image</a>`;
+      shareModal.style.display = "flex";
+      document.getElementById("closeShareImageModal").onclick = function() {
+        shareModal.style.display = "none";
+      };
     }
-  }
-
-  // Call setupShareButton after DOM is loaded
-  document.addEventListener("DOMContentLoaded", setupShareButton);
+  });
 
 });
