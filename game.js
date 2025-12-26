@@ -566,63 +566,67 @@ document.addEventListener("DOMContentLoaded", () => {
     if (shareBtn) shareBtn.style.display = "none";
   }
 
-  // Share button logic (share entire stats table area as image, trigger system share directly)
-  document.getElementById("shareBtn").addEventListener("click", async function() {
-    // Capture the entire stats table area as an image, accounting for canvas scaling
-    const canvas = document.getElementById("gameCanvas");
-    const VIRTUAL_WIDTH = 900;
-    const VIRTUAL_HEIGHT = 900;
-    const tableX = 50, tableY = 50, tableWidth = VIRTUAL_WIDTH - 100, tableHeight = VIRTUAL_HEIGHT - 100;
+  // Ensure share button event listener is attached after DOM is loaded and button exists
+  function setupShareButton() {
+    const shareBtn = document.getElementById("shareBtn");
+    if (shareBtn && !shareBtn._listenerAttached) {
+      shareBtn.addEventListener("click", async function() {
+        // Capture the entire stats table area as an image, accounting for canvas scaling
+        const canvas = document.getElementById("gameCanvas");
+        const VIRTUAL_WIDTH = 900;
+        const VIRTUAL_HEIGHT = 900;
+        const tableX = 50, tableY = 50, tableWidth = VIRTUAL_WIDTH - 100, tableHeight = VIRTUAL_HEIGHT - 100;
 
-    // Calculate the scale between the actual canvas size and the virtual size
-    const scaleX = canvas.width / VIRTUAL_WIDTH;
-    const scaleY = canvas.height / VIRTUAL_HEIGHT;
+        // Calculate the scale between the actual canvas size and the virtual size
+        const scaleX = canvas.width / VIRTUAL_WIDTH;
+        const scaleY = canvas.height / VIRTUAL_HEIGHT;
 
-    // Calculate the actual pixel area to copy
-    const sx = tableX * scaleX;
-    const sy = tableY * scaleY;
-    const sw = tableWidth * scaleX;
-    const sh = tableHeight * scaleY;
+        // Calculate the actual pixel area to copy
+        const sx = tableX * scaleX;
+        const sy = tableY * scaleY;
+        const sw = tableWidth * scaleX;
+        const sh = tableHeight * scaleY;
 
-    // Create a temporary canvas to copy the full stats table area
-    const tempCanvas = document.createElement("canvas");
-    tempCanvas.width = sw;
-    tempCanvas.height = sh;
-    const tempCtx = tempCanvas.getContext("2d");
-    tempCtx.drawImage(canvas, sx, sy, sw, sh, 0, 0, sw, sh);
-    const dataUrl = tempCanvas.toDataURL("image/png");
+        // Create a temporary canvas to copy the full stats table area
+        const tempCanvas = document.createElement("canvas");
+        tempCanvas.width = sw;
+        tempCanvas.height = sh;
+        const tempCtx = tempCanvas.getContext("2d");
+        tempCtx.drawImage(canvas, sx, sy, sw, sh, 0, 0, sw, sh);
+        const dataUrl = tempCanvas.toDataURL("image/png");
 
-    // Try to share directly using Web Share API (if supported)
-    if (navigator.canShare && window.File && window.fetch) {
-      const res = await fetch(dataUrl);
-      const blob = await res.blob();
-      const file = new File([blob], "planet-shooter-results.png", { type: "image/png" });
-      try {
-        await navigator.share({
-          files: [file],
-          title: "Planet Shooter Results",
-          text: "Check out my Planet Shooter game results!"
-        });
-      } catch (e) {
-        alert("Sharing was cancelled or not supported on this device.");
-      }
-    } else {
-      // Fallback: show download link
-      const shareModal = document.getElementById("shareImageModal");
-      const sharePreview = document.getElementById("shareImagePreview");
-      const shareDownload = document.getElementById("shareImageDownload");
-      sharePreview.innerHTML = `<img src='${dataUrl}' alt='Stats Table' style='max-width:100%; border:1px solid #ccc; border-radius:8px;'/>`;
-      shareDownload.innerHTML = `<a href='${dataUrl}' download='planet-shooter-results.png' style='font-size:15px;'>Download Image</a>`;
-      shareModal.style.display = "flex";
-      document.getElementById("closeShareImageModal").onclick = function() {
-        shareModal.style.display = "none";
-      };
+        // Try to share directly using Web Share API (if supported)
+        if (navigator.canShare && window.File && window.fetch) {
+          const res = await fetch(dataUrl);
+          const blob = await res.blob();
+          const file = new File([blob], "planet-shooter-results.png", { type: "image/png" });
+          try {
+            await navigator.share({
+              files: [file],
+              title: "Planet Shooter Results",
+              text: "Check out my Planet Shooter game results!"
+            });
+          } catch (e) {
+            alert("Sharing was cancelled or not supported on this device.");
+          }
+        } else {
+          // Fallback: show download link
+          const shareModal = document.getElementById("shareImageModal");
+          const sharePreview = document.getElementById("shareImagePreview");
+          const shareDownload = document.getElementById("shareImageDownload");
+          sharePreview.innerHTML = `<img src='${dataUrl}' alt='Stats Table' style='max-width:100%; border:1px solid #ccc; border-radius:8px;'/>`;
+          shareDownload.innerHTML = `<a href='${dataUrl}' download='planet-shooter-results.png' style='font-size:15px;'>Download Image</a>`;
+          shareModal.style.display = "flex";
+          document.getElementById("closeShareImageModal").onclick = function() {
+            shareModal.style.display = "none";
+          };
+        }
+      });
+      shareBtn._listenerAttached = true;
     }
-  });
+  }
+
+  // Call setupShareButton after DOM is loaded
+  document.addEventListener("DOMContentLoaded", setupShareButton);
 
 });
-
-
-
-
-
