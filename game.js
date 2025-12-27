@@ -55,10 +55,10 @@ document.addEventListener("DOMContentLoaded", () => {
     {speed:1.0, balls:4, hits:6},
     {speed:1.0, balls:4, hits:7},
     {speed:1.0, balls:4, hits:7},
-    {speed:1.0, balls:4, hits:11},
-    {speed:1.0, balls:4, hits:11},
-    {speed:1.0, balls:4, hits:11},
-    {speed:1.0, balls:4, hits:11}
+    {speed:1.0, balls:4, hits:7},
+    {speed:1.0, balls:4, hits:7},
+    {speed:1.0, balls:4, hits:7},
+    {speed:1.0, balls:4, hits:7}
   ];
 
   // =====================
@@ -520,3 +520,4 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 });
+
